@@ -10,34 +10,29 @@
     <meta name="description" content="豆瓣 - 请不要害羞 - 豆瓣最大的美女图片分享平台，镜头绘制的美好瞬间。">
     <meta name="author" content="Binux">
     <script>
-
-    location.protocol = 'http:';
-
-
-var duoshuoQuery = {
-    short_name: 'dbhaiziu'
-};
-</script>
-    <link rel="stylesheet" href="//cdnjscn.b0.upaiyun.com/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css">
+      var duoshuoQuery = {
+        short_name: 'dbhaiziu'
+      };
+    </script>
+    <link rel="stylesheet" href="http://cdnjscn.b0.upaiyun.com/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css">
     <style>
-
-.thumbnail {
-    width: 330px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-}
-.thumbnail .caption h3 {
-    font-size: 18px;
-}
-#progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: #ddd;
-    z-index: -1;
-    transition: height 0.3s;
-}
-</style>
+      .thumbnail {
+        width: 330px; 
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175); 
+      }
+      .thumbnail .caption h3 {
+        font-size: 18px;
+      }
+      #progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: #ddd;
+        z-index: -1;
+        transition: height 0.3s;
+      }
+    </style>
   </head>
 
   <body>
@@ -47,7 +42,6 @@ var duoshuoQuery = {
     <div id="posts">
     </div>
     <script id="post-tpl" type="x-tmpl-mustache">
-
       {{#.}}
         <div class="thumbnail post">
           {{#imgs}}
@@ -61,115 +55,84 @@ var duoshuoQuery = {
         </div>
       {{/.}}
     </script>
-    <script src="//cdnjscn.b0.upaiyun.com/libs/mustache.js/0.8.1/mustache.min.js">
-</script>
-    <script src="//cdnjscn.b0.upaiyun.com/libs/jquery/2.1.1/jquery.min.js">
-</script>
-    <script src="//cdnjscn.b0.upaiyun.com/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js">
-</script>
-    <script src="//cdnjscn.b0.upaiyun.com/libs/masonry/3.1.5/masonry.pkgd.min.js">
-</script>
-    <script src="//cdnjscn.b0.upaiyun.com/libs/jquery.imagesloaded/3.0.4/jquery.imagesloaded.min.js">
-</script>
-    <script src="//static.duoshuo.com/embed.unstable.js">
-</script>
+    <script src="http://cdnjscn.b0.upaiyun.com/libs/mustache.js/0.8.1/mustache.min.js"></script>
+    <script src="http://cdnjscn.b0.upaiyun.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdnjscn.b0.upaiyun.com/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="http://cdnjscn.b0.upaiyun.com/libs/masonry/3.1.5/masonry.pkgd.min.js"></script>
+    <script src="http://cdnjscn.b0.upaiyun.com/libs/jquery.imagesloaded/3.0.4/jquery.imagesloaded.min.js"></script>
+    <script src="http://static.duoshuo.com/embed.unstable.js"></script>
     <script>
+      var container = $("#posts").masonry({
+        columnWidth: 20
+      });
+      var CUR_PAGE = 1;
+      var isloading = false;
+      var offset_pos;
 
-var container = $("#posts").masonry({
-    columnWidth: 20
-});
-var CUR_PAGE = 1;
-var isloading = false;
-var offset_pos;
-
-function load(page) {
-    isloading = true;
-    DUOSHUO.API.get("threads/listPosts", {
-        thread_key: "doubanhaixiuzu",
-        page: page,
-        limit: 10
-    }, function(data) {
-        console.log(data);
-        var parsed_data = [];
-        $.each(data.response, function(i, e) {
+      function load(page) {
+        isloading = true;
+        DUOSHUO.API.get("threads/listPosts", {
+          thread_key: "doubanhaixiuzu",
+          page: page,
+          limit: 10
+        }, function(data) {
+          console.log(data);
+          var parsed_data = [];
+          $.each(data.response, function(i, e) {
             e = data.parentPosts[e];
-            var msg = null ;
+            var msg = null;
             try {
-                msg = JSON.parse(atob(e.message.replace(/<br\/>/g, '')));
+              msg = JSON.parse(atob(e.message.replace(/<br\/>/g, '')));
             } catch (error) {
+              try {
+                msg = JSON.parse(e.message);
+              } catch (error) {
                 try {
-                    msg = JSON.parse(e.message);
+                  var msg = JSON.parse($('<textarea />').html(e.message).text())
                 } catch (error) {
-                    try {
-                        var msg = JSON.parse($('<textarea />').html(e.message).text())
-                    } catch (error) {
-                        console.log(e.message);
-                        return;
-                    }
+                  console.log(e.message);
+                  return ;
                 }
+              }
             }
             msg.time = e.created_at
             parsed_data.push(msg);
-        }
-        );
-        
-        if (parsed_data.length == 0) {
+          });
+
+          if (parsed_data.length == 0) {
             return;
-        }
-        
-        var template = $('#post-tpl').html();
-        Mustache.parse(template);
-        var new_items = $(Mustache.render(template, parsed_data));
-        var imgLoad = imagesLoaded($("<div>").append(new_items))
-        var imgLoaded = 0;
-        imgLoad.on("always", function() {
-            container.append(new_items).masonry('appended', new_items);
+          }
+
+          var template = $('#post-tpl').html();
+          Mustache.parse(template);
+          var new_items = $(Mustache.render(template, parsed_data));
+          var imgLoad = imagesLoaded($("<div>").append(new_items))
+          var imgLoaded = 0;
+          imgLoad.on("always", function() {
+            container.append(new_items).masonry('appended', new_items); 
             $("#progress").hide();
             isloading = false;
-        }
-        );
-        imgLoad.on("progress", function() {
+          });
+          imgLoad.on("progress", function() {
             imgLoaded++;
-            $("#progress").show().css("height", "" + (imgLoaded / imgLoad.images.length * 100) + "%");
-        }
-        );
-        offset_pos = new_items[0];
-    }
-    );
-}
+            $("#progress").show().css("height", ""+(imgLoaded/imgLoad.images.length*100)+"%");
+          });
+          offset_pos = new_items[0];
+        });
+      }
 
-$(window).scroll(function() {
-    if ($(document).scrollTop() + $(window).height() > $(offset_pos).position().top) {
-        if (!isloading) {
+      $(window).scroll(function() {
+        if ($(document).scrollTop() + $(window).height() > $(offset_pos).position().top) {
+          if (!isloading) {
             load(++CUR_PAGE);
+          }
         }
-    }
-}
-);
+      });
 
-load(CUR_PAGE);
-</script>
+      load(CUR_PAGE);
+    </script>
 
-    <script>
 
-(function(i, s, o, g, r, a, m) {
-    i['GoogleAnalyticsObject'] = r;
-    i[r] = i[r] || function() {
-        (i[r].q = i[r].q || []).push(arguments)
-    }
-    ,
-    i[r].l = 1 * new Date();
-    a = s.createElement(o),
-    m = s.getElementsByTagName(o)[0];
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m)
-}
-)(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-ga('create', 'UA-36392342-3', 'auto');
-ga('send', 'pageview');
-</script>
   </body>
 </html>
 <!-- vim: set et sw=2 ts=2 sts=2 ff=unix fenc=utf8: -->
