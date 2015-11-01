@@ -61,7 +61,6 @@
     <script src="http://cdnjscn.b0.upaiyun.com/libs/masonry/3.1.5/masonry.pkgd.min.js"></script>
     <script src="http://cdnjscn.b0.upaiyun.com/libs/jquery.imagesloaded/3.0.4/jquery.imagesloaded.min.js"></script>
     <script src="http://static.duoshuo.com/embed.unstable.js"></script>
-    <script src="http://libs.baidu.com/prototype/1.7.1.0/prototype.js"></script>
     <script>
       var container = $("#posts").masonry({
         columnWidth: 20
@@ -132,6 +131,7 @@
 
       load(CUR_PAGE);
     </script>
+    
     <script>
 (function(){(function(){Prototype.Browser.WebKit||Event.observe(window,"load",function(){$$("a[href][rel~=noreferrer], area[href][rel~=noreferrer]").each(function(a){var f,c,i,d,j,g,k,e,l,h;c=a.href;if(Prototype.Browser.Opera)a.href="http://www.google.com/url?q="+encodeURIComponent(c),a.title||(a.title="Go to "+c);else{d=!1;i=function(){a.href="javascript:void(0)"};g=function(){a.href=c};h=["mouseout","mouseover","focus","blur"];e=0;for(l=h.length;e<l;e++)j=h[e],Event.observe(a,j,g);Event.observe(a,
 "mousedown",function(a){Event.isMiddleClick(a)&&(d=!0)});Event.observe(a,"blur",function(){d=!1});Event.observe(a,"mouseup",function(a){Event.isMiddleClick(a)&&d&&(i(),Event.stop(a),d=!1,setTimeout(function(){alert("Middle clicking on this link is disabled to keep the browser from sending a referrer.");g()},500))});f="<html><head><meta http-equiv='Refresh' content='0; URL="+c.escapeHTML()+"' /></head><body></body></html>";Prototype.Browser.IE?Event.observe(a,"click",function(a){var b;switch(b=this.target||
